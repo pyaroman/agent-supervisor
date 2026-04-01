@@ -130,19 +130,57 @@ What to do instead.
 
 The supervisor adds entries when it catches problems. The agent reads them at startup and avoids repeating mistakes. This is how the agent gets smarter over time.
 
-## Example Usage
+## Use Cases
 
-After setup, run `claude` and try:
+### Diagnose and Fix Agent Issues
+The supervisor can scan your agent's logs, configs, and runtime state to find problems you'd never catch manually. Run it on-demand when something feels off, or make it part of a regular health check routine.
+
+```
+"Go through the agent's logs from the last 24 hours, find anything
+broken or inefficient, and fix it"
+
+"The agent's responses have been slow — figure out why and resolve it"
+
+"Check if any cron jobs failed overnight and restart anything that died"
+```
+
+### Coaching Sessions
+Tell the supervisor to teach your agent a new skill or fix a recurring problem. It will go back and forth with the agent autonomously — asking questions, reviewing the agent's work, editing code and config files, and retrying until the agent can complete the task correctly on its own. You walk away and come back to a smarter agent.
+
+```
+"The agent keeps splitting X posts into threads when they should be
+single posts. Coach it until it gets this right every time."
+
+"The agent's deploy process is fragile. Work with it to build a
+pre-deploy checklist and test it until deploys pass consistently."
+
+"Teach the agent how to handle Stripe webhook failures gracefully.
+Don't do it for the agent — make it learn."
+```
+
+### Discover and Implement Improvements
+Work alongside the supervisor to brainstorm ways to make your agent better at specific tasks. It reads the agent's current capabilities, identifies gaps, and implements the improvements directly — updating rules, adding new operational procedures, or refactoring how the agent approaches a problem.
+
+```
+"Look at how the agent handles error recovery and suggest 3 ways
+to make it more resilient. Then implement the best one."
+
+"The agent's memory system works but it's noisy. Find a way to
+reduce log spam without losing important events."
+
+"Review the agent's SOUL.md and AGENT_LEARNINGS.md. Are there
+patterns we're missing? Add any new rules that would help."
+```
+
+### Quick Commands
+
+After setup, run `claude` in your project directory and try:
 
 ```
 "Check if the agent is running and healthy"
-
 "Read the agent's recent logs and tell me if anything went wrong"
-
 "Tell the agent to deploy the app and make sure it doesn't break anything"
-
 "The agent keeps messing up X — add a rule to prevent it"
-
 "Do a full system audit — check processes, disk, logs, and configs"
 ```
 
