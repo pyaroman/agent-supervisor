@@ -1,0 +1,40 @@
+{
+  "name": "agent-supervisor",
+  "version": "1.0.0",
+  "description": "One-command setup to let Claude Code or Codex supervise any AI agent — local or remote. OpenClaw, Ollama, LM Studio, or any custom CLI.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "agent-supervisor": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "supervisor",
+    "claude-code",
+    "codex",
+    "ollama",
+    "openclaw",
+    "lm-studio",
+    "ai-agent",
+    "monitoring",
+    "devops"
+  ],
+  "author": "Angel Roman <pyaroman>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pyaroman/agent-supervisor.git"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "chalk": "^5.4.0",
+    "ora": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
