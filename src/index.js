@@ -3,10 +3,15 @@
 import { select, input, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import ora from 'ora';
-import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs';
+import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { detectLocal, detectRemote, testSSH } from './detect.js';
-import { generateClaudeMd } from './generate.js';
+import { generateSupervisorConfig, generateMemory } from './generate.js';
+
+const SUPERVISOR_TOOLS = {
+  claude: { name: 'Claude Code', file: 'CLAUDE.md', cmd: 'claude' },
+  codex: { name: 'Codex', file: 'AGENTS.md', cmd: 'codex' },
+};
 
 const BANNER = `
 ${chalk.bold.cyan('┌─────────────────────────────────────────┐')}
@@ -18,7 +23,18 @@ ${chalk.bold.cyan('└───────────────────�
 async function main() {
   console.log(BANNER);
 
-  // Step 1: Local or Remote
+  // Step 1: Which supervisor tool
+  const supervisorId = await select({
+    message: 'What will supervise your agent?',
+    choices: [
+      { name: 'Claude Code', value: 'claude' },
+      { name: 'Codex (OpenAI)', value: 'codex' },
+    ],
+  });
+
+  const supervisor = SUPERVISOR_TOOLS[supervisorId];
+
+  // Step 2: Local or Remote
   const connectionType = await select({
     message: 'Where is your agent running?',
     choices: [
@@ -49,7 +65,7 @@ async function main() {
     spinner.succeed(`Connected to ${sshTarget}`);
   }
 
-  // Step 2: Detect frameworks
+  // Step 3: Detect frameworks
   const spinner = ora('Scanning for agent frameworks...').start();
   const detected = connectionType === 'local' ? detectLocal() : detectRemote(sshTarget);
   spinner.stop();
@@ -158,11 +174,12 @@ async function main() {
     }
   }
 
-  // Step 3: Generate everything
+  // Step 4: Generate everything
   console.log('');
   const genSpinner = ora('Generating supervisor configuration...').start();
 
   const config = {
+    supervisor: supervisorId,
     framework,
     connection: connectionType,
     sshTarget,
@@ -178,27 +195,33 @@ async function main() {
   const configPath = join(process.cwd(), '.agent-supervisor.json');
   writeFileSync(configPath, JSON.stringify(config, null, 2));
 
-  // Generate CLAUDE.md
-  const claudeMd = generateClaudeMd(config);
-  const claudeMdPath = join(process.cwd(), 'CLAUDE.md');
+  // Generate supervisor config file (CLAUDE.md or AGENTS.md)
+  const supervisorConfig = generateSupervisorConfig(config);
+  const configFileName = supervisor.file;
+  const configFilePath = join(process.cwd(), configFileName);
 
-  if (existsSync(claudeMdPath)) {
+  if (existsSync(configFilePath)) {
     genSpinner.stop();
     const overwrite = await confirm({
-      message: 'CLAUDE.md already exists. Overwrite with supervisor config?',
+      message: `${configFileName} already exists. Overwrite with supervisor config?`,
       default: false,
     });
     if (overwrite) {
-      writeFileSync(claudeMdPath, claudeMd);
+      writeFileSync(configFilePath, supervisorConfig);
     } else {
-      // Append instead
-      const existing = readFileSync(claudeMdPath, 'utf-8');
-      writeFileSync(claudeMdPath, existing + '\n\n---\n\n' + claudeMd);
-      console.log(chalk.dim('  Appended supervisor config to existing CLAUDE.md'));
+      const existing = readFileSync(configFilePath, 'utf-8');
+      writeFileSync(configFilePath, existing + '\n\n---\n\n' + supervisorConfig);
+      console.log(chalk.dim(`  Appended supervisor config to existing ${configFileName}`));
     }
     genSpinner.start();
   } else {
-    writeFileSync(claudeMdPath, claudeMd);
+    writeFileSync(configFilePath, supervisorConfig);
+  }
+
+  // Generate memory file
+  const memoryPath = join(process.cwd(), 'SUPERVISOR_MEMORY.md');
+  if (!existsSync(memoryPath)) {
+    writeFileSync(memoryPath, generateMemory());
   }
 
   genSpinner.succeed('Configuration complete!');
@@ -207,18 +230,19 @@ async function main() {
   console.log('');
   console.log(chalk.bold('  Setup complete. Here\'s what was created:\n'));
   console.log(chalk.dim(`  ${chalk.green('✓')} .agent-supervisor.json  — connection and framework config`));
-  console.log(chalk.dim(`  ${chalk.green('✓')} CLAUDE.md               — supervisor instructions for Claude Code`));
+  console.log(chalk.dim(`  ${chalk.green('✓')} ${configFileName.padEnd(23)} — supervisor instructions for ${supervisor.name}`));
+  console.log(chalk.dim(`  ${chalk.green('✓')} SUPERVISOR_MEMORY.md    — persistent memory across sessions`));
 
   console.log('');
   console.log(chalk.bold('  Next steps:\n'));
-  console.log(`  ${chalk.cyan('1.')} Run ${chalk.bold('claude')} in this directory to start supervising`);
-  console.log(`  ${chalk.cyan('2.')} Ask Claude Code to check on your agent, fix problems, or improve its config`);
+  console.log(`  ${chalk.cyan('1.')} Run ${chalk.bold(supervisor.cmd)} in this directory to start supervising`);
+  console.log(`  ${chalk.cyan('2.')} Ask ${supervisor.name} to check on your agent, fix problems, or improve its config`);
   console.log('');
-  console.log(chalk.dim('  Example commands to try with Claude Code:'));
+  console.log(chalk.dim(`  Example commands to try with ${supervisor.name}:`));
   console.log(chalk.dim('    "Check if the agent is running and healthy"'));
   console.log(chalk.dim('    "Read the agent\'s recent logs and tell me if anything is wrong"'));
   console.log(chalk.dim('    "Tell the agent to build X and make sure it does it right"'));
-  console.log(chalk.dim('    "Add a new rule to the agent\'s SOUL.md about Y"'));
+  console.log(chalk.dim('    "Add a new rule to the agent\'s config about Y"'));
   console.log('');
 }
 

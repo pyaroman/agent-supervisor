@@ -1,5 +1,5 @@
 
-export function generateClaudeMd(config) {
+export function generateSupervisorConfig(config) {
   const { framework, connection, sshTarget, binary, workspace, logs, customCmd, home } = config;
   const isRemote = connection === 'remote';
   const sshPrefix = isRemote ? `ssh -o ConnectTimeout=10 ${sshTarget}` : '';
@@ -239,16 +239,42 @@ When the user asks for a health check or system review:
 3. Check AGENT_LEARNINGS.md for recurring patterns
 4. Report findings with specific recommendations
 
+## Supervisor Memory
+
+You have a persistent memory file at \`SUPERVISOR_MEMORY.md\` in this directory. Read it at the start of every session. Write to it whenever you learn something worth remembering.
+
+**What to save:**
+- Agent quirks and known issues (e.g., "this agent hallucinates about API limits")
+- What you fixed and how (so you don't re-diagnose the same problem)
+- The agent's strengths and weaknesses at specific tasks
+- Configuration changes you made and why
+- Patterns you've noticed in the agent's mistakes
+
+**Format:** Use dated entries. Keep it concise. This file grows over time and makes you a better supervisor with every session.
+
+**Always read SUPERVISOR_MEMORY.md before starting work.** It contains context from previous sessions that you won't have otherwise.
+
 ## Rules
 
 - **Never do the agent's job for it** unless explicitly asked or time-critical. The agent learns by doing.
-- **Always add learnings** to AGENT_LEARNINGS.md when you fix something. Format: Mistake > Impact > Pattern to Avoid > Better Approach.
+- **Always update SUPERVISOR_MEMORY.md** when you learn something new about the agent, fix a recurring issue, or make a significant change.
 - **Verify before reporting.** Don't tell the user something is fixed until you've confirmed it.
 - **Read before writing.** Always read a file before editing it.
-- **Preserve the agent's voice.** When editing SOUL.md, maintain the agent's established personality.
+- **Preserve the agent's voice.** When editing the agent's config files, maintain its established personality.
 `;
 
   return claudeMd;
+}
+
+export function generateMemory() {
+  return `# Supervisor Memory
+
+This file persists across sessions. The supervisor reads it at startup and writes to it when it learns something new about the agent.
+
+---
+
+_No entries yet. After your first supervision session, observations about the agent will be logged here automatically._
+`;
 }
 
 function getFrameworkName(id) {

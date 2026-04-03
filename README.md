@@ -1,6 +1,6 @@
 # Agent Supervisor
 
-**One command to let Claude Code (or Codex) supervise any AI agent — local or remote.**
+**One command to let Claude Code or Codex supervise any AI agent — local or remote.**
 
 Your AI agent runs 24/7 on cheap hardware or a local model. When it gets stuck, makes mistakes, or needs improvement, a top-tier model (Claude Code, Codex) connects, diagnoses, coaches, and fixes it. You just say what you want done.
 
@@ -38,18 +38,16 @@ After setup, open Claude Code in the directory and it knows how to talk to, eval
 ### Local Agent (same machine)
 
 ```bash
-# Navigate to where you want the supervisor config
 mkdir my-supervisor && cd my-supervisor
 
-# Run setup
 npx agent-supervisor
 
-# Answer the prompts:
+# > What will supervise your agent? → Claude Code (or Codex)
 # > Where is your agent running? → On this machine (local)
 # > Which framework? → (auto-detected)
 
 # Start supervising
-claude
+claude   # or: codex
 ```
 
 ### Remote Agent (SSH)
@@ -59,11 +57,12 @@ mkdir my-supervisor && cd my-supervisor
 
 npx agent-supervisor
 
+# > What will supervise your agent? → Claude Code (or Codex)
 # > Where is your agent running? → On a remote server (SSH)
 # > SSH connection: → user@your-server-ip
 # > Which framework? → (auto-detected)
 
-claude
+claude   # or: codex
 ```
 
 ## Supported Frameworks
@@ -81,10 +80,11 @@ claude
 ```
 your-directory/
   .agent-supervisor.json    # Connection config (gitignored)
-  CLAUDE.md                 # Supervisor instructions for Claude Code
+  CLAUDE.md or AGENTS.md    # Supervisor instructions (depends on your tool)
+  SUPERVISOR_MEMORY.md      # Persistent memory across sessions
 ```
 
-That's it. Two files. The `.agent-supervisor.json` stores how to reach your agent. The `CLAUDE.md` teaches Claude Code everything it needs to know to supervise it: how to connect, how to send messages, where to find logs and configs, how to run health checks, and when to coach vs. directly intervene.
+Three files. The config tells the supervisor how to reach your agent. The `CLAUDE.md` (or `AGENTS.md` for Codex) teaches the supervisor how to connect, send messages, find logs, run health checks, and when to coach vs. directly intervene. The memory file persists everything the supervisor learns about your agent across sessions — quirks, past fixes, known issues, what works and what doesn't.
 
 Your agent's existing setup stays untouched. The supervisor works with whatever identity, rules, and config your agent already has.
 
@@ -168,7 +168,7 @@ On request, the supervisor:
 ## Requirements
 
 - **Node.js 18+** for the setup CLI
-- **Claude Code** or any AI coding assistant that reads CLAUDE.md
+- **Claude Code** or **Codex** (setup auto-generates the correct config file)
 - **SSH key-based auth** for remote agents (no password prompts)
 - An AI agent running on OpenClaw, Ollama, LM Studio, or any CLI
 
