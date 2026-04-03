@@ -6,7 +6,7 @@ import ora from 'ora';
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { detectLocal, detectRemote, testSSH } from './detect.js';
-import { generateClaudeMd, generateSoulMd, generateAgentsMd, generateLearningsMd } from './generate.js';
+import { generateClaudeMd } from './generate.js';
 
 const BANNER = `
 ${chalk.bold.cyan('┌─────────────────────────────────────────┐')}
@@ -158,24 +158,7 @@ async function main() {
     }
   }
 
-  // Step 3: Install templates?
-  let installTemplates = false;
-  if (workspace) {
-    const soulExists = connectionType === 'local'
-      ? existsSync(join(workspace, 'SOUL.md'))
-      : false; // Can't easily check remote, ask anyway
-
-    if (!soulExists) {
-      installTemplates = await confirm({
-        message: 'Install supervision templates (SOUL.md, AGENTS.md, AGENT_LEARNINGS.md) into the workspace?',
-        default: true,
-      });
-    } else {
-      console.log(chalk.dim('  Supervision templates already exist in workspace, skipping.\n'));
-    }
-  }
-
-  // Step 4: Generate everything
+  // Step 3: Generate everything
   console.log('');
   const genSpinner = ora('Generating supervisor configuration...').start();
 
@@ -218,42 +201,6 @@ async function main() {
     writeFileSync(claudeMdPath, claudeMd);
   }
 
-  // Install templates if requested
-  if (installTemplates && workspace) {
-    if (connectionType === 'local') {
-      const files = {
-        'SOUL.md': generateSoulMd(),
-        'AGENTS.md': generateAgentsMd(),
-        'AGENT_LEARNINGS.md': generateLearningsMd(),
-      };
-      for (const [name, content] of Object.entries(files)) {
-        const filePath = join(workspace, name);
-        if (!existsSync(filePath)) {
-          writeFileSync(filePath, content);
-        }
-      }
-    } else {
-      // For remote, we'll write templates via SSH
-      const { execSync } = await import('child_process');
-      const files = {
-        'SOUL.md': generateSoulMd(),
-        'AGENTS.md': generateAgentsMd(),
-        'AGENT_LEARNINGS.md': generateLearningsMd(),
-      };
-      for (const [name, content] of Object.entries(files)) {
-        const escaped = content.replace(/'/g, "'\\''");
-        try {
-          execSync(
-            `ssh -o ConnectTimeout=10 ${sshTarget} "test -f '${workspace}/${name}' || cat > '${workspace}/${name}' << 'AGENTSUPERVISOREOF'\n${escaped}\nAGENTSUPERVISOREOF"`,
-            { stdio: 'pipe', timeout: 15000 }
-          );
-        } catch {
-          // Non-fatal, just skip
-        }
-      }
-    }
-  }
-
   genSpinner.succeed('Configuration complete!');
 
   // Summary
@@ -261,17 +208,11 @@ async function main() {
   console.log(chalk.bold('  Setup complete. Here\'s what was created:\n'));
   console.log(chalk.dim(`  ${chalk.green('✓')} .agent-supervisor.json  — connection and framework config`));
   console.log(chalk.dim(`  ${chalk.green('✓')} CLAUDE.md               — supervisor instructions for Claude Code`));
-  if (installTemplates) {
-    console.log(chalk.dim(`  ${chalk.green('✓')} SOUL.md                 — agent identity and rules (in workspace)`));
-    console.log(chalk.dim(`  ${chalk.green('✓')} AGENTS.md               — agent operations guide (in workspace)`));
-    console.log(chalk.dim(`  ${chalk.green('✓')} AGENT_LEARNINGS.md      — mistake log (in workspace)`));
-  }
 
   console.log('');
   console.log(chalk.bold('  Next steps:\n'));
   console.log(`  ${chalk.cyan('1.')} Run ${chalk.bold('claude')} in this directory to start supervising`);
   console.log(`  ${chalk.cyan('2.')} Ask Claude Code to check on your agent, fix problems, or improve its config`);
-  console.log(`  ${chalk.cyan('3.')} Customize SOUL.md in your agent's workspace to define its personality`);
   console.log('');
   console.log(chalk.dim('  Example commands to try with Claude Code:'));
   console.log(chalk.dim('    "Check if the agent is running and healthy"'));

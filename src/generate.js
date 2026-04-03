@@ -1,13 +1,3 @@
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const TEMPLATES_DIR = join(__dirname, '..', 'templates');
-
-function readTemplate(name) {
-  return readFileSync(join(TEMPLATES_DIR, name), 'utf-8');
-}
 
 export function generateClaudeMd(config) {
   const { framework, connection, sshTarget, binary, workspace, logs, customCmd, home } = config;
@@ -272,14 +262,3 @@ function getFrameworkName(id) {
   return names[id] || id;
 }
 
-export function generateSoulMd() {
-  return readTemplate('SOUL.md');
-}
-
-export function generateAgentsMd() {
-  return readTemplate('AGENTS.md');
-}
-
-export function generateLearningsMd() {
-  return readTemplate('AGENT_LEARNINGS.md');
-}

@@ -11,9 +11,8 @@ npx agent-supervisor
 ## What This Does
 
 1. **Detects** your agent framework (OpenClaw, Ollama, LM Studio, or any custom CLI)
-2. **Generates** a `CLAUDE.md` that teaches Claude Code how to supervise your agent
-3. **Installs** supervision templates (identity, rules, mistake log) into your agent's workspace
-4. **Works locally** (agent on same machine) or **remotely** (agent on a server via SSH)
+2. **Generates** a `CLAUDE.md` that teaches Claude Code how to connect to, supervise, and improve your agent
+3. **Works locally** (agent on same machine) or **remotely** (agent on a server via SSH)
 
 After setup, open Claude Code in the directory and it knows how to talk to, evaluate, coach, and improve your agent.
 
@@ -48,7 +47,6 @@ npx agent-supervisor
 # Answer the prompts:
 # > Where is your agent running? → On this machine (local)
 # > Which framework? → (auto-detected)
-# > Install templates? → Yes
 
 # Start supervising
 claude
@@ -84,51 +82,11 @@ claude
 your-directory/
   .agent-supervisor.json    # Connection config (gitignored)
   CLAUDE.md                 # Supervisor instructions for Claude Code
-
-your-agent-workspace/       # (if templates installed)
-  SOUL.md                   # Agent identity, voice, rules
-  AGENTS.md                 # Operational procedures
-  AGENT_LEARNINGS.md        # Mistake log — grows over time
 ```
 
-### CLAUDE.md
+That's it. Two files. The `.agent-supervisor.json` stores how to reach your agent. The `CLAUDE.md` teaches Claude Code everything it needs to know to supervise it: how to connect, how to send messages, where to find logs and configs, how to run health checks, and when to coach vs. directly intervene.
 
-Generated dynamically based on your setup. Teaches Claude Code:
-- How to connect to your agent (local commands or SSH)
-- How to send messages and maintain conversations
-- Where to find logs, configs, and workspace files
-- How to run health checks
-- When to coach vs. directly intervene
-- How to log learnings so the agent improves
-
-### SOUL.md
-
-Defines your agent's identity. Customize this to set:
-- Personality and voice
-- Thinking modes (fast operator vs. careful analysis)
-- Hard rules the agent must follow
-- What to do when uncertain
-
-### AGENT_LEARNINGS.md
-
-A growing log of mistakes and lessons. Format:
-```markdown
-## Iteration #1 — Descriptive Title
-
-### Mistake
-What happened.
-
-### Impact
-Why it mattered.
-
-### Pattern to Avoid
-The general rule.
-
-### Better Approach
-What to do instead.
-```
-
-The supervisor adds entries when it catches problems. The agent reads them at startup and avoids repeating mistakes. This is how the agent gets smarter over time.
+Your agent's existing setup stays untouched. The supervisor works with whatever identity, rules, and config your agent already has.
 
 ## Use Cases
 
