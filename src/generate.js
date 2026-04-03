@@ -13,22 +13,31 @@ export function generateSupervisorConfig(config) {
   if (isRemote) {
     connectSection = `## Connection
 
-This agent runs on a remote machine. All commands must go through SSH.
+This agent runs on a remote machine at \`${sshTarget}\`. You have full terminal access via SSH — read files, write files, edit configs, run commands, restart processes, deploy changes. Anything you can do in a terminal, you can do on this machine.
 
 \`\`\`bash
 # Test connection
 ${sshPrefix} "echo connected"
 
-# Interactive session
-${sshPrefix}
-\`\`\`
+# Run any command
+${sshPrefix} "YOUR COMMAND"
 
-**SSH Target:** \`${sshTarget}\`
+# Read a file
+${sshPrefix} "cat /path/to/file"
+
+# Edit a file (use sed, tee, or heredoc)
+${sshPrefix} "sed -i 's/old/new/g' /path/to/file"
+
+# Write a new file
+${sshPrefix} "cat > /path/to/file << 'EOF'
+content here
+EOF"
+\`\`\`
 `;
   } else {
     connectSection = `## Connection
 
-This agent runs locally on this machine. Commands run directly in the shell.
+This agent runs locally on this machine. You have full terminal access — read files, write files, edit configs, run commands, restart processes, deploy changes. Use your standard tools (Bash, Read, Edit, Write) to work directly on the agent.
 `;
   }
 
@@ -202,15 +211,16 @@ df -h / | tail -1
 
   const claudeMd = `# Agent Supervisor Configuration
 
-This project is set up to supervise a${framework === 'ollama' ? 'n' : ''} **${getFrameworkName(framework)}** agent running **${isRemote ? 'remotely' : 'locally'}**${isRemote ? ` on \`${sshTarget}\`` : ''}.
+You have full context and control over a${framework === 'ollama' ? 'n' : ''} **${getFrameworkName(framework)}** agent running **${isRemote ? 'remotely' : 'locally'}**${isRemote ? ` on \`${sshTarget}\`` : ''}. You can connect to it, navigate the terminal, read logs, edit configs, run commands, and implement changes directly.
 
-You are the **supervisor**. Your job is to:
-1. **Evaluate** what the agent did — check its work, read its logs, verify its outputs
-2. **Coach** the agent through problems — don't do the work for it, make it learn
-3. **Fix** critical issues directly when the agent is stuck or wrong
-4. **Improve** the agent's rules and learnings so it gets better over time
+Your job is to:
+1. **Analyze** the agent's work, logs, configs, and behavior patterns
+2. **Build** new capabilities, workflows, and rules for the agent
+3. **Optimize** how the agent handles tasks — refactor, tighten, improve
+4. **Fix** issues at the root cause, not with band-aids
+5. **Coach** the agent through problems so it learns to handle them on its own
 
-When the user asks you to do something on the agent's machine, use the connection details below.
+Use the connection details below to work on the agent.
 
 ${connectSection}
 ${messageSection}

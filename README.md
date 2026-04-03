@@ -2,7 +2,7 @@
 
 **Connect a top-tier AI to any local agent. It analyzes, builds, optimizes, and fixes — the best models available, engineering your local AI.**
 
-Your AI agent runs on whatever you want — OpenClaw, Ollama, LM Studio, a custom framework on a Raspberry Pi. It does the work. But it has a ceiling. Agent Supervisor connects it to a model with the reasoning to actually raise that ceiling: deep analysis of logs and behavior patterns, designing new capabilities, optimizing how it handles tasks, reviewing output quality, and implementing real fixes when things break. Your agent keeps getting smarter because it has a better engineer working on it.
+One command sets up everything. Point it at your agent — OpenClaw, Ollama, LM Studio, or any custom CLI — and it generates a config that gives Claude Code or Codex full context and control. It can connect to your agent, navigate the terminal, read logs, edit configs, run commands, and implement changes directly. Persistent memory across sessions means it compounds what it learns about your agent over time.
 
 ```
 npx agent-supervisor
@@ -11,11 +11,9 @@ npx agent-supervisor
 ## What This Does
 
 1. **Detects** your agent framework (OpenClaw, Ollama, LM Studio, or any custom CLI)
-2. **Generates** a config that teaches Claude Code or Codex how to connect to and work on your agent
-3. **Creates** a persistent memory so the supervisor compounds its knowledge of your agent across sessions
+2. **Generates** a config that gives Claude Code or Codex full context and control over your agent
+3. **Creates** a persistent memory so it compounds knowledge of your agent across sessions
 4. **Works locally** (agent on same machine) or **remotely** (agent on a server via SSH)
-
-After setup, open Claude Code or Codex in the directory and it knows how to connect to your agent, analyze its work, build new capabilities, optimize its performance, and fix problems at the root.
 
 ## The Pattern
 
