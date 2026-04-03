@@ -1,8 +1,8 @@
 # Agent Supervisor
 
-**One command to let Claude Code or Codex supervise any AI agent — local or remote.**
+**Connect a top-tier AI to any local agent. It analyzes, builds, optimizes, and fixes — the best models available, engineering your local AI.**
 
-Your AI agent runs 24/7 on cheap hardware or a local model. When it gets stuck, makes mistakes, or needs improvement, a top-tier model (Claude Code, Codex) connects, diagnoses, coaches, and fixes it. You just say what you want done.
+Your AI agent runs on whatever you want — OpenClaw, Ollama, LM Studio, a custom framework on a Raspberry Pi. It does the work. But it has a ceiling. Agent Supervisor connects it to a model with the reasoning to actually raise that ceiling: deep analysis of logs and behavior patterns, designing new capabilities, optimizing how it handles tasks, reviewing output quality, and implementing real fixes when things break. Your agent keeps getting smarter because it has a better engineer working on it.
 
 ```
 npx agent-supervisor
@@ -11,10 +11,11 @@ npx agent-supervisor
 ## What This Does
 
 1. **Detects** your agent framework (OpenClaw, Ollama, LM Studio, or any custom CLI)
-2. **Generates** a `CLAUDE.md` that teaches Claude Code how to connect to, supervise, and improve your agent
-3. **Works locally** (agent on same machine) or **remotely** (agent on a server via SSH)
+2. **Generates** a config that teaches Claude Code or Codex how to connect to and work on your agent
+3. **Creates** a persistent memory so the supervisor compounds its knowledge of your agent across sessions
+4. **Works locally** (agent on same machine) or **remotely** (agent on a server via SSH)
 
-After setup, open Claude Code in the directory and it knows how to talk to, evaluate, coach, and improve your agent.
+After setup, open Claude Code or Codex in the directory and it knows how to connect to your agent, analyze its work, build new capabilities, optimize its performance, and fix problems at the root.
 
 ## The Pattern
 
@@ -22,16 +23,16 @@ After setup, open Claude Code in the directory and it knows how to talk to, eval
 ┌──────────────┐         ┌─────────────────┐         ┌──────────────┐
 │     You      │ ──────> │  Claude Code /   │ ──────> │  Your Agent  │
 │  (human)     │         │  Codex           │  SSH /  │  (OpenClaw,  │
-│              │ <────── │  (supervisor)    │ <────── │   Ollama,    │
+│              │ <────── │  (top-tier AI)   │ <────── │   Ollama,    │
 │              │         │                  │  local  │   custom)    │
 └──────────────┘         └─────────────────┘         └──────────────┘
-                          reads logs, sends            runs 24/7,
-                          messages, updates             does the work,
-                          rules, fixes issues           learns from
-                                                        mistakes
+                          analyzes, builds,            runs 24/7,
+                          optimizes, fixes,            does the work,
+                          designs, reviews             gets better
+                                                       over time
 ```
 
-**You** tell the supervisor what you want. **The supervisor** connects to your agent, evaluates its work, coaches it through problems, and improves its rules. **Your agent** does the actual work, runs autonomously, and gets better over time.
+**You** say what you want done. **The top-tier model** connects to your agent, analyzes its work, builds new capabilities, optimizes its approach, and implements improvements directly. **Your agent** does the daily work, runs autonomously, and keeps getting better because something smarter is engineering it.
 
 ## Quick Start
 
@@ -142,28 +143,22 @@ After setup, run `claude` in your project directory and try:
 "Do a full system audit — check processes, disk, logs, and configs"
 ```
 
-## How Supervision Works
+## How It Works
 
-### Coaching (default)
-When the agent makes a mistake, the supervisor:
-1. Identifies what went wrong
-2. Asks the agent questions to check understanding
-3. Makes the agent fix it (doesn't do it for them)
-4. Logs the lesson in AGENT_LEARNINGS.md
+### Deep Analysis
+The supervisor reads your agent's logs, configs, code, and behavior patterns to understand how it operates. It finds inefficiencies, recurring failures, and missed opportunities that surface-level monitoring would never catch.
 
-### Direct Intervention
-When the agent is stuck or time is critical:
-1. Reads logs and files to understand the state
-2. Fixes the issue directly
-3. Explains what was fixed and why
-4. Logs the lesson so the agent learns
+### Build and Optimize
+It doesn't just identify problems — it designs and implements solutions. New capabilities, better workflows, tighter rules, refactored approaches. It writes the code, updates the configs, and verifies the changes work.
 
-### System Audit
-On request, the supervisor:
-1. Checks agent process status
-2. Reviews recent logs for errors
-3. Scans AGENT_LEARNINGS.md for recurring patterns
-4. Reports findings with recommendations
+### Coaching Sessions
+For problems the agent should learn to handle itself, the supervisor works back and forth with it — asking questions, reviewing attempts, editing code, and retrying until the agent can complete the task at a high level on its own.
+
+### Direct Fixes
+When something is broken and time matters, the supervisor diagnoses the root cause, implements the fix directly, and logs what happened so the agent doesn't repeat it.
+
+### Persistent Memory
+Everything the supervisor learns about your agent is saved to `SUPERVISOR_MEMORY.md`. Next session, it picks up right where it left off — knowing the agent's quirks, past issues, what's been tried, and what works.
 
 ## Requirements
 
